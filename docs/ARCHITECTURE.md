@@ -6,6 +6,10 @@ This document describes the implemented architecture visible in the `v1_4_0` wor
 
 The plausible first customer is a 20–50 person short-video studio. Creators revise scripts and storyboards, generate multiple image and video candidates, review versions, and export approved clips. A lost render wastes paid inference and production time; a wrong or stale asset in a final export can create a client delivery failure. The studio likely has an identity provider, existing creative files, and a review workflow that Illustory must coexist with. Exact request volume, concurrency, latency, budget, data classification, and geographic requirements are unknown and must be agreed with a real customer.
 
+## Two views of the system
+
+The [creative workflow](WORKFLOW.md) describes **what the creator makes** from script to final cut. The layers below describe **how the software executes and protects each stage**. AI stages use the same durable job lifecycle; editing and final FFmpeg assembly are application workflows with their own validation and version selection.
+
 ## Implemented layers
 
 1. **Experience:** browser views for script, storyboard, cast, scenes, shots, job activity, trim, and export.

@@ -1,8 +1,33 @@
 # Illustory.ai — architecture showcase
 
-Illustory turns a script into an editable production workflow: storyboard, cast and scene references, shot assets, generated motion, enhanced video, and a final export. This repository is a **sanitized technical showcase and fictional interactive walkthrough** of the current `v1_4_0` workspace. It is not the application source, an API client, or a customer production deployment.
+Illustory takes a script through an editable production workflow: storyboard, cast and scene references, shot first frames, generated motion, optional enhancement, and final export. This repository is a **sanitized technical showcase and fictional interactive walkthrough** of the current `v1_4_0` workspace. It is not the application source, an API client, or a customer production deployment.
 
-**Live demo:** A private preview is available to the project owner through Sites. The `dist/` directory can also be served as a static website.
+**Live demo:** [Explore the public architecture walkthrough](https://susunbourne.github.io/Illustory.ai-demo/). The `dist/` directory can also be served as a static website.
+
+## Creative workflow and engineering skills
+
+```mermaid
+flowchart LR
+    A[Editable script<br/>paste or .txt/.md import] --> B[Structured storyboard<br/>cast, scenes, shots, timed beats]
+    B --> C[Character references<br/>and scene anchors]
+    C --> D[Shot first frames]
+    D --> E[H3 motion clips]
+    E --> F{Enhance?}
+    F -->|optional| G[SeedVR2 version]
+    F -->|keep original| H[Select + trim]
+    G --> H
+    H --> I[FFmpeg final export<br/>storyboard order]
+```
+
+| Creative stage | Concrete output | Engineering work |
+|---|---|---|
+| Script and storyboard | Editable script, typed cast/scenes/shots/beats | Text import, Azure AI Foundry parsing, typed schemas, revision tracking |
+| Visual continuity | Character references and scene anchors | GPT Image 2 integration, imported voice normalization, versioned asset lineage |
+| Shot image | First frame for each shot | Reference dependency checks and image generation |
+| Motion and enhancement | H3 clip; optional SeedVR2 version | Vast GPU orchestration, ComfyUI H3 adapter, separate enhancement adapter |
+| Edit and delivery | Selected/trimmed clips and final MP4 | Exact asset-version selection and FFmpeg normalization/concatenation |
+
+The creator can edit the storyboard between stages and generate only the needed assets. Each output keeps the input version it came from; changed inputs make dependent results stale without destroying history. **Voice audio is imported; voice generation is not configured.** The H3/SeedVR workflow is implemented, while the cited cloud smoke run covered parsing and images rather than repeating paid GPU jobs. See [workflow details and evidence](docs/WORKFLOW.md).
 
 ## System at a glance
 
@@ -37,7 +62,7 @@ flowchart LR
 | Binary storage | Private Azure Blob Storage and local development adapter | Immutable asset bytes; database records carry references and checksums |
 | Azure operations | Container Apps, Container Registry, Key Vault, managed identities, Log Analytics | Runtime, artifact, secret and telemetry boundaries |
 
-The generation endpoint records an idempotent request and returns a job ID. A worker leases the job and records each attempt. On success, it verifies the output and publishes a new asset version only when the lease and input revision are still valid. A failed or stale attempt does not replace the current asset. See [the architecture walkthrough](docs/ARCHITECTURE.md).
+The AI stages above use a shared generation control path. An endpoint records an idempotent request and returns a job ID. A worker leases the job and records each attempt. On success, it verifies the output and publishes a new asset version only when the lease and input revision are still valid. A failed or stale attempt does not replace the current asset. See [the architecture walkthrough](docs/ARCHITECTURE.md).
 
 ## Demo boundary
 
